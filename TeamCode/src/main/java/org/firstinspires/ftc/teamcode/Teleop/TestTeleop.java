@@ -6,21 +6,24 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Projects.HWMapBasic;
-
+//idiotproofing marked by //~comment
 @TeleOp(name = "TestTeleop")
+
+    //~this is a LinearOpMode
 public class TestTeleop extends LinearOpMode {
     public HWMapBasic robot = new HWMapBasic();
     @Override
     public void runOpMode() throws InterruptedException {
         robot.init(hardwareMap);
-        double speed = .8;
-        int rightPosition = 0;
+        double speed = .8; //~speed limiter
+        int rightPosition = 0; //~right and left lift motor targets
         int leftPosition = 0;
         int noU = -8000;
         int pos = 2;
-        double rDiff = .5;
+        double rDiff = .5; //~diff zeros
         double lDiff = .5;
-        int[] positions;
+        int[] positions; 
+        //~these are drivetrain motors, mode toggle is self-explanatory i hope
         robot.fRightWheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.fLeftWheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.bRightWheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -32,19 +35,23 @@ public class TestTeleop extends LinearOpMode {
         robot.rightLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.leftLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        //~telemetry is the printout in the DH
         telemetry.addLine("" + robot.leftLift.getCurrentPosition());
         telemetry.addLine("" + robot.rightLift.getCurrentPosition());
+        //~lift motors will ask for a position to run to
         robot.rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
+        
         telemetry.addLine("target position: " + robot.leftLift.getCurrentPosition());
         telemetry.addLine("target position: " + robot.rightLift.getCurrentPosition());
         telemetry.update();
 
-
+        //~allows the robot to chill out until the play button is pressed
         waitForStart();
         boolean isSpinning = false;
+        //~big loop! this is the update loop
         while (opModeIsActive()) {
+            //~all these variables in the input section write to doubles based on the controller actions
             boolean aButtonHeld = false;
             double y = gamepad1.left_stick_y; // Remember, this is reversed!
             double x = -gamepad1.left_stick_x*1.1; // Counteract imperfect strafing
@@ -59,22 +66,29 @@ public class TestTeleop extends LinearOpMode {
             double fRightPower = (y - x - rx) / denominator;
             double bRightPower = (y + x - rx) / denominator;
 
+            //after a bunch of math these powers are assigned to the drivetrain
             robot.fLeftWheel.setPower(fLeftPower * speed);
             robot.bLeftWheel.setPower(bLeftPower * speed);
             robot.fRightWheel.setPower(fRightPower * speed);
             robot.bRightWheel.setPower(bRightPower * speed);
 
+            //~sensitivity limiter
             if(Math.abs(ry)>.1 && Math.abs(y)<.1&&Math.abs(x)<.1&&Math.abs(rx)<.1){
                 robot.fRightWheel.setPower(ry);
                 robot.bLeftWheel.setPower(ry);
             }
 //gamepad1=
+            //~checks for controller input on arm position
             if (gamepad2.left_bumper&&leftPosition<0&&rightPosition<0) {
+                //~these servos take in a value from 0 to 1, based on the right and left limits
                 robot.rArm.setPosition(0); //0 arm out (farthest down)
                 robot.lArm.setPosition(0); // 1
+
+                //~sets the target lift positions
                 rightPosition += 35;
                 leftPosition += 35;
 
+                //~power limiters, 100% power makes the lift shake
                 robot.rightLift.setPower(.95);
                 robot.leftLift.setPower(.95);
 
@@ -88,6 +102,7 @@ public class TestTeleop extends LinearOpMode {
                 robot.rightLift.setTargetPosition(rightPosition);
                 robot.leftLift.setTargetPosition(leftPosition);
 
+                //~after lift runs, gets the position and writes it (pretty sure this is what aurix is mad about)
                 int a = robot.rightLift.getCurrentPosition();
                 int c = robot.leftLift.getCurrentPosition();
                 telemetry.addLine("current position: " + a + "," + c);
@@ -102,19 +117,39 @@ public class TestTeleop extends LinearOpMode {
                 rightPosition -= 30;
                 leftPosition -= 30;
 
+                //~same stuff as before, just on the way down - i believe this tries to find the height of the OZ wall
                 robot.rightLift.setPower(.95);
                 robot.leftLift.setPower(.95);
+                int a = robot.rightLift.getCurrentPosition();
+                int c = robot.leftLift.getCurrentPosition();
                 robot.rightLift.setTargetPosition(rightPosition);
                 robot.leftLift.setTargetPosition(leftPosition);
+                // Run to pos
+                robot.rightLift.setTargetPosition(rightPosition);
+                robot.leftLift.setTargetPosition(leftPosition);
+
                 int a = robot.rightLift.getCurrentPosition();
                 int c = robot.leftLift.getCurrentPosition();
                 telemetry.addLine("current position: " + a + "," + c);
                 telemetry.addLine("target position: " + robot.leftLift.getTargetPosition());
                 telemetry.update();
 
+                //~sabine's solution to the lift freeze issue, do NOT actually implement this unless you prove it works
+                /*
+                while (robot.rightLift.getCurrentPosition() <= rightPosition || robot.leftLift.getCurrentPosition() <= leftPosition) {
+                    a = robot.rightLift.getCurrentPosition();
+                    c = robot.leftLift.getCurrentPosition();
+                    telemetry.addLine("current position: " + a + "," + c);
+                    telemetry.addLine("target position: " + robot.leftLift.getTargetPosition());
+                    telemetry.update();
+                }*/
+                
+
             }
 //             Teleop Code goes here         }
             //drive climb wrist gamepad1 else is gamepad2
+
+            //~all of this is servo stuff, pretty straightforward
             if (gamepad1.a) {
                 robot.claw.setPosition(0); //claw closed
             }
@@ -150,6 +185,7 @@ public class TestTeleop extends LinearOpMode {
                 //  robot.wrist.setPosition(.35);
             }
             //add button in
+            //~this controls the diff, but it's not fully implemented as of 1330/2/1
             if(-gamepad2.right_stick_y>.1&&rDiff<.51){
                 if(pos==2){
                     rDiff = .5;
@@ -231,6 +267,7 @@ public class TestTeleop extends LinearOpMode {
 
 
             // TODO: INIT POS 0 FOR HEIGHT
+            //~other lift code for presets ig
             if (gamepad2.a){
                 telemetry.addLine("Setting slider to zero");
                 telemetry.update();
@@ -296,6 +333,7 @@ public class TestTeleop extends LinearOpMode {
                 robot.wrist.setPosition(.825);
             }*/
 
+            //~more lift i guess
             if (gamepad2.x){
                 robot.rArm.setPosition(0); //0 arm out (farthest down)
                 robot.lArm.setPosition(0); // 1
@@ -328,7 +366,7 @@ public class TestTeleop extends LinearOpMode {
                 robot.wrist.setPosition(.6);
             }*/
 
-
+            //~even more servo control
             if (gamepad2.dpad_down)
             {robot.rArm.setPosition(0); //0 arm out (farthest down)
                 robot.lArm.setPosition(0); // 1
@@ -358,7 +396,7 @@ public class TestTeleop extends LinearOpMode {
         }
     }
 
-
+    //~the actual method for WTTR()
     int[] WaitTillTargetReached(int tolerance, boolean lock){
         int leftDifference = Math.abs(robot.leftLift.getTargetPosition() - robot.leftLift.getCurrentPosition());
         int rightDifference = Math.abs(robot.rightLift.getTargetPosition() - robot.rightLift.getCurrentPosition());
