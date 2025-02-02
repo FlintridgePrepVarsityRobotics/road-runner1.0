@@ -18,8 +18,8 @@ public class TestTeleop extends LinearOpMode {
         int leftPosition = 0;
         int noU = -8000;
         int pos = 2;
-        double rDiff = .5;
-        double lDiff = .5;
+        double rDiff = .9;
+        double lDiff = .9;
         int[] positions;
         robot.fRightWheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.fLeftWheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -164,37 +164,39 @@ public class TestTeleop extends LinearOpMode {
                 pos++;
                 robot.rDiff.setPosition(rDiff);
                 robot.lDiff.setPosition(lDiff);
-                sleep(250);
+
             }
-            if(-gamepad2.right_stick_y<.1&&rDiff>.49){
+            if(-gamepad2.left_stick_y>.1&&rDiff<.49){
                 if(pos==2){
                     rDiff = .5;
                     lDiff = .5;
+                    pos=1;
                 }
+
                 if(pos==3){
                     rDiff=.64;
                     lDiff=.36;
+                    pos=2;
                 }
                 rDiff-=.14;
                 lDiff+=.14;
                 pos--;
                 robot.rDiff.setPosition(rDiff);
                 robot.lDiff.setPosition(lDiff);
-                sleep(250);
+
             }
             if(gamepad2.right_stick_x>.1){
                 if(pos==1){
                     rDiff =.267;
                     lDiff = .733;
+                    pos=3;
                 }
                 if(pos==3){
                     rDiff = .733;
                     lDiff = .267;
+                    pos=1;
                 }
-                if(pos==2){
-                    rDiff = .594;
-                    lDiff = .406;
-                }
+
                 robot.rDiff.setPosition(rDiff);
                 robot.lDiff.setPosition(lDiff);
             }
@@ -336,18 +338,21 @@ public class TestTeleop extends LinearOpMode {
                 robot.lArm.setPosition(1); // 1
             }
             if (gamepad2.dpad_left)
-            {robot.rArm.setPosition(.5);   // init pos
-                robot.lArm.setPosition(.5);
+            {robot.rArm.setPosition(0.625);   // init pos
+                robot.lArm.setPosition(0.375);
             }
 
             if (gamepad2.dpad_up) //arm out for wall spec grab
             {
-                robot.rArm.setPosition(0);
-                robot.lArm.setPosition(1);
+                robot.rArm.setPosition(0.325);
+                robot.lArm.setPosition(0.675);
+                robot.lBar.setPosition(0.5);
+                robot.rBar.setPosition(0.5);
             }
 
             if (gamepad2.dpad_right)
             {
+
                 robot.rBar.setPosition(0); // pos slightly above sample
                 robot.lBar.setPosition(0); //
             }
