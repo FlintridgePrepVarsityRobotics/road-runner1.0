@@ -42,8 +42,8 @@ public class HWMapBasic extends Project {
         rightLift = hwMap.get(DcMotorEx.class, "RL");
         claw = hwMap.servo.get("Claw");
         wrist = hwMap.servo.get("Wrist");
-        lBar = hwMap.servo.get("lBar");
-        rBar = hwMap.servo.get("rBar");
+        lBar = hwMap.servo.get("lLink");
+        rBar = hwMap.servo.get("rLink");
         lArm = hwMap.servo.get("lArm");
         rArm = hwMap.servo.get("rArm");
         lDiff = hwMap.servo.get("lDiff");
@@ -88,7 +88,7 @@ public class HWMapBasic extends Project {
         rightLift.setPower(0);
         claw.setPosition(0);
         wrist.setPosition(0); //originally .825
-        lArm.setPosition(0);
+        lArm.setPosition(1);
         rArm.setPosition(0);
         rDiff.setPosition(.5);
         lDiff.setPosition(.5);
