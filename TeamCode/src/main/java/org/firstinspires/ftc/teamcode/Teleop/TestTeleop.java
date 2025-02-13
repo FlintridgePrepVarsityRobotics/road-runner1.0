@@ -18,6 +18,7 @@ public class TestTeleop extends LinearOpMode {
         int leftPosition = 0;
         int noU = -8000;
         int pos = 2;
+        double armPos = .5;
         double rDiff = .9;
         double lDiff = .9;
         int[] positions;
@@ -150,41 +151,41 @@ public class TestTeleop extends LinearOpMode {
                 //  robot.wrist.setPosition(.35);
             }
             //add button in
-            if(-gamepad2.right_stick_y>.1&&rDiff<.51){
-                if(pos==2){
-                    rDiff = .5;
-                    lDiff = .5;
-                }
-                if(pos==1){
-                    rDiff=.36;
-                    lDiff=.64;
-                }
-                rDiff+=.14;
-                lDiff-=.14;
-                pos++;
-                robot.rDiff.setPosition(rDiff);
-                robot.lDiff.setPosition(lDiff);
-
-            }
-            if(-gamepad2.left_stick_y>.1&&rDiff<.49){
-                if(pos==2){
-                    rDiff = .5;
-                    lDiff = .5;
-                    pos=1;
-                }
-
-                if(pos==3){
-                    rDiff=.64;
-                    lDiff=.36;
-                    pos=2;
-                }
-                rDiff-=.14;
-                lDiff+=.14;
-                pos--;
-                robot.rDiff.setPosition(rDiff);
-                robot.lDiff.setPosition(lDiff);
-
-            }
+//            if(-gamepad2.right_stick_y>.1&&rDiff<.51){
+//                if(pos==2){
+//                    rDiff = .5;
+//                    lDiff = .5;
+//                }
+//                if(pos==1){
+//                    rDiff=.36;
+//                    lDiff=.64;
+//                }
+//                rDiff+=.14;
+//                lDiff-=.14;
+//                pos++;
+//                robot.rDiff.setPosition(rDiff);
+//                robot.lDiff.setPosition(lDiff);
+//
+//            }
+//            if(-gamepad2.left_stick_y>.1&&rDiff<.49){
+//                if(pos==2){
+//                    rDiff = .5;
+//                    lDiff = .5;
+//                    pos=1;
+//                }
+//
+//                if(pos==3){
+//                    rDiff=.64;
+//                    lDiff=.36;
+//                    pos=2;
+//                }
+//                rDiff-=.14;
+//                lDiff+=.14;
+//                pos--;
+//                robot.rDiff.setPosition(rDiff);
+//                robot.lDiff.setPosition(lDiff);
+//
+//            }
             if(gamepad2.right_stick_x>.1){
                 if(pos==1){
                     rDiff =.267;
@@ -238,8 +239,8 @@ public class TestTeleop extends LinearOpMode {
             if (gamepad2.a){
                 telemetry.addLine("Setting slider to zero");
                 telemetry.update();
-                robot.rArm.setPosition(0); //0 arm out (farthest down)
-                robot.lArm.setPosition(1); // 1
+//                robot.rArm.setPosition(0); //0 arm out (farthest down)
+//                robot.lArm.setPosition(1); // 1
                 robot.leftLift.setPower(.95);
                 robot.rightLift.setPower(.95);
                 robot.leftLift.setTargetPosition(0);
@@ -300,25 +301,25 @@ public class TestTeleop extends LinearOpMode {
                 robot.wrist.setPosition(.825);
             }*/
 
-            if (gamepad2.x){
-                robot.rArm.setPosition(0); //0 arm out (farthest down)
-                robot.lArm.setPosition(1); // 1
-                robot.rightLift.setPower(.95);
-                robot.leftLift.setPower(.95);
-                telemetry.addLine("Setting slider to zero");
-                telemetry.update();
-                robot.leftLift.setTargetPosition(-1680);
-                robot.rightLift.setTargetPosition(-1680);
-//-1500, target -1680, scoring -2500
-                positions = WaitTillTargetReached(50, true);
-                rightPosition = positions[0];
-                leftPosition = positions[1];
-                robot.rightLift.setTargetPosition(-1680);
-                robot.leftLift.setTargetPosition(-1680);
-                rightPosition = positions[0];
-                leftPosition = positions[1];
-                //sleep(750);
-            }
+//            if (gamepad2.x){
+//                robot.rArm.setPosition(0); //0 arm out (farthest down)
+//                robot.lArm.setPosition(1); // 1
+//                robot.rightLift.setPower(.95);
+//                robot.leftLift.setPower(.95);
+//                telemetry.addLine("Setting slider to zero");
+//                telemetry.update();
+//                robot.leftLift.setTargetPosition(-1680);
+//                robot.rightLift.setTargetPosition(-1680);
+////-1500, target -1680, scoring -2500
+//                positions = WaitTillTargetReached(50, true);
+//                rightPosition = positions[0];
+//                leftPosition = positions[1];
+//                robot.rightLift.setTargetPosition(-1680);
+//                robot.leftLift.setTargetPosition(-1680);
+//                rightPosition = positions[0];
+//                leftPosition = positions[1];
+//                //sleep(750);
+//            }
             if (gamepad1.dpad_up){          //pick up spec from wall
                 //robot.wrist.setPosition(0.53);
                 //sleep(50);
@@ -357,10 +358,33 @@ public class TestTeleop extends LinearOpMode {
                 robot.lBar.setPosition(0); //
             }
 
-            if (gamepad2.dpad_up)
-            {robot.lBar.setPosition(0.5);
-                robot.rBar.setPosition(0.5);
+            if (gamepad2.start)
+            {robot.lDiff.setPosition(0.5);
+                robot.rDiff.setPosition(0.5);
             }
+            if(gamepad2.back){
+                robot.lDiff.setPosition(0.4);
+                robot.rDiff.setPosition(0.6);
+            }
+           if(gamepad2.b){
+               robot.lDiff.setPosition(1);
+               robot.rDiff.setPosition(0);
+           }
+           if(gamepad2.x){
+               robot.lDiff.setPosition(0);
+               robot.rDiff.setPosition(1);
+           }
+           if(gamepad2.right_stick_y>.1&&armPos>.2){
+               armPos-=.1;
+               robot.rArm.setPosition(armPos);
+               robot.lArm.setPosition(1-armPos);
+           }
+            if(gamepad2.right_stick_y<-.1&&armPos<1){
+                armPos+=.1;
+                robot.rArm.setPosition(armPos);
+                robot.lArm.setPosition(1-armPos);
+            }
+
 
         }
     }

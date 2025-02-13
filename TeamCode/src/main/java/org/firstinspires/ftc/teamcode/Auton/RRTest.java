@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode.Auton;
 
+import com.acmerobotics.roadrunner.ParallelAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+
 import org.firstinspires.ftc.teamcode.Projects.HWMapBasic;
 //package org.firstinspires.ftc.teamcode;
 
@@ -32,10 +35,10 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 public class RRTest extends LinearOpMode {
     // lift class
     public class LeftLift {
-        private DcMotorEx leftLift;
+        private DcMotorEx leftLift= null;
 
         public LeftLift(HardwareMap hardwareMap) {
-            leftLift = hardwareMap.get(DcMotorEx.class, "leftLift");
+            leftLift = hardwareMap.get(DcMotorEx.class, "LL");
             leftLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             leftLift.setDirection(DcMotor.Direction.FORWARD);
 
@@ -134,10 +137,10 @@ public class RRTest extends LinearOpMode {
 
 
     public class RightLift {
-        private DcMotorEx rightLift;
+        private DcMotorEx rightLift = null;
 
         public RightLift(HardwareMap hardwareMap) {
-            rightLift = hardwareMap.get(DcMotorEx.class, "rightLift");
+            rightLift = hardwareMap.get(DcMotorEx.class, "RL");
             rightLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             rightLift.setDirection(DcMotor.Direction.REVERSE);
 
@@ -277,7 +280,7 @@ public class RRTest extends LinearOpMode {
         public class CloselArm implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                lArm.setPosition(1);
+                lArm.setPosition(.325);
                 return false;
             }
         }
@@ -289,13 +292,24 @@ public class RRTest extends LinearOpMode {
         public class OpenlArm implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                lArm.setPosition(0);
+                lArm.setPosition(.9);
                 return false;
             }
         }
 
         public Action openlArm() {
             return new OpenlArm();
+        }
+        public class MedlArm implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                lArm.setPosition(.5);
+                return false;
+            }
+        }
+
+        public Action medlArm() {
+            return new LArm.MedlArm();
         }
     }
 
@@ -309,7 +323,7 @@ public class RRTest extends LinearOpMode {
         public class CloserArm implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                rArm.setPosition(0);
+                rArm.setPosition(.625);
                 return false;
             }
         }
@@ -321,13 +335,24 @@ public class RRTest extends LinearOpMode {
         public class OpenrArm implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                rArm.setPosition(1);
+                rArm.setPosition(.1);
                 return false;
             }
         }
 
         public Action openrArm() {
             return new OpenrArm();
+        }
+        public class MedrArm implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                rArm.setPosition(.5);
+                return false;
+            }
+        }
+
+        public Action medrArm() {
+            return new MedrArm();
         }
     }
 
@@ -341,13 +366,25 @@ public class RRTest extends LinearOpMode {
         public class CloserDiff implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                rDiff.setPosition(.25);
+                rDiff.setPosition(.75);
                 return false;
             }
         }
 
         public Action closerDiff() {
             return new CloserDiff();
+        }
+
+        public class MedrDiff implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                rDiff.setPosition(.2);
+                return false;
+            }
+        }
+
+        public Action medrDiff() {
+            return new MedrDiff();
         }
 
         public class OpenrDiff implements Action {
@@ -373,13 +410,25 @@ public class RRTest extends LinearOpMode {
         public class CloselDiff implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                lDiff.setPosition(.75);
+                lDiff.setPosition(.25);
                 return false;
             }
         }
 
         public Action closelDiff() {
             return new CloselDiff();
+        }
+
+        public class MedlDiff implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                lDiff.setPosition(.8);
+                return false;
+            }
+        }
+
+        public Action medlDiff() {
+            return new LDiff.MedlDiff();
         }
 
         public class OpenlDiff implements Action {
@@ -459,7 +508,13 @@ public class RRTest extends LinearOpMode {
 
 
         while (!isStarted()) {
-
+            Actions.runBlocking(claw.closeClaw());
+            Actions.runBlocking(lArm.medlArm());
+            Actions.runBlocking(rArm.medrArm());
+            Actions.runBlocking(lDiff.medlDiff());
+            Actions.runBlocking(rDiff.medrDiff());
+            Actions.runBlocking(rBar.closerBar());
+            Actions.runBlocking(lBar.closelBar());
 
         }
         waitForStart(); //wait for play button to be pressed
@@ -476,16 +531,16 @@ public class RRTest extends LinearOpMode {
 //                .build();
         TrajectoryActionBuilder tab2 = drive.actionBuilder(new Pose2d(27.6, 0, Math.toRadians(0)))
 
-                .splineToConstantHeading(new Vector2d(27, -29), 0)
-                .splineToConstantHeading(new Vector2d(56, -29), 0)
+                .splineToConstantHeading(new Vector2d(27, -32), 0)
+                .splineToConstantHeading(new Vector2d(56, -32), 0)
                 .splineToConstantHeading(new Vector2d(56, -36), 0)
                 .splineToConstantHeading(new Vector2d(15, -36), 0)
                 .splineToConstantHeading(new Vector2d(56, -36), 0)
-                .splineToConstantHeading(new Vector2d(56, -45), 0)
-                .splineToConstantHeading(new Vector2d(15, -45), 0)
-                .splineToConstantHeading(new Vector2d(56, -45), 0)
-                .splineToConstantHeading(new Vector2d(56, -54), 0)
-                .splineToConstantHeading(new Vector2d(15, -54), 0)
+                .splineToConstantHeading(new Vector2d(56, -42), 0)
+                .splineToConstantHeading(new Vector2d(15, -42), 0)
+                .splineToConstantHeading(new Vector2d(56, -42), 0)
+                .splineToConstantHeading(new Vector2d(56, -50), 0)
+                .splineToConstantHeading(new Vector2d(15, -50), 0)
                 .splineToConstantHeading(new Vector2d(32, -30), Math.PI / 2);
         Action trajectoryActionCloseOut2 = tab2.endTrajectory()
                 .build();
@@ -509,54 +564,85 @@ public class RRTest extends LinearOpMode {
                 .build();
 
 
-        Actions.runBlocking(claw.closeClaw());
-        Actions.runBlocking(lArm.closelArm());
-        Actions.runBlocking(rArm.closerArm());
-        Actions.runBlocking(lDiff.closelDiff());
-        Actions.runBlocking(rDiff.closerDiff());
-        Actions.runBlocking(rBar.closerBar());
-        Actions.runBlocking(lBar.closelBar());
+
 
         Actions.runBlocking(
                 new SequentialAction(
                         tab1.build(),
-                        leftLift.leftLiftMed(),
-                        rightLift.rightLiftMed(),
-                        trajectoryActionCloseOut,
-                        leftLift.leftLiftUp(),
-                        rightLift.rightLiftUp(),
+                        new ParallelAction(
+                                leftLift.leftLiftMed(),
+                                rightLift.rightLiftMed(),
+
+                                rArm.closerArm(),
+                                lArm.closelArm(),
+                                rDiff.openrDiff(),
+                                lDiff.openlDiff()
+                        ),
+                        new SleepAction(3),
+                       // trajectoryActionCloseOut,
+                        new ParallelAction(
+                                leftLift.leftLiftUp(),
+                                rightLift.rightLiftUp(),
+                                new SleepAction(3)
+
+                        ),
+                        //new WaitAction(0.5),  // Give time for lift to move
                         claw.openClaw(),
+
                         tab2.build(),
-                        leftLift.leftLiftDown(),
-                        rightLift.rightLiftDown(),
-                        trajectoryActionCloseOut2,
-                        rArm.openrArm(),
-                        lArm.openlArm(),
-                        rDiff.openrDiff(),
-                        lDiff.openlDiff(),
+                        new ParallelAction(
+                                leftLift.leftLiftDown(),
+                                rightLift.rightLiftDown()
+
+
+                        ),
+                        new SleepAction(3),
+
+
+                        new ParallelAction(
+                                rArm.closerArm(),
+                                lArm.closelArm(),
+                                rDiff.openrDiff(),
+                                lDiff.openlDiff()
+                        ),
                         tab3.build(),
-                        trajectoryActionCloseOut3,
+                       // trajectoryActionCloseOut3,
                         claw.closeClaw(),
-                        rArm.closerArm(),
-                        lArm.closelArm(),
-                        rDiff.closerDiff(),
-                        lDiff.closelDiff(),
+
+                        new ParallelAction(
+                                rArm.openrArm(),
+                                lArm.openlArm(),
+                                rDiff.closerDiff(),
+                                lDiff.closelDiff()
+                        ),
                         tab4.build(),
-                        leftLift.leftLiftMed(),
-                        rightLift.rightLiftMed(),
-                        trajectoryActionCloseOut4,
-                        leftLift.leftLiftUp(),
-                        rightLift.rightLiftUp(),
+                        new ParallelAction(
+                                leftLift.leftLiftMed(),
+                                rightLift.rightLiftMed()
+
+                        ),
+                                new SleepAction(2),
+                       // trajectoryActionCloseOut4,
+                        new ParallelAction(
+                                leftLift.leftLiftUp(),
+                                rightLift.rightLiftUp()
+
+                        ),
+                                new SleepAction(3),
+                       // new WaitAction(0.5),
                         claw.openClaw(),
 
                         tab5.build(),
-                        leftLift.leftLiftDown(),
-                        rightLift.rightLiftDown(),
-                        trajectoryActionCloseOut5
+                        new ParallelAction(
+                                leftLift.leftLiftDown(),
+                                rightLift.rightLiftDown()
 
-
+                        ),
+                                new SleepAction(3)
+                      //  trajectoryActionCloseOut5
                 )
         );
+
         //while(robot.right.isBusy()|| robot.left.isBusy()) {
 
         //telemetry.addData("Status", robot.armMotor.getCurrentPosition());
